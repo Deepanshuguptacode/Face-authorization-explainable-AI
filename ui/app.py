@@ -243,10 +243,28 @@ def generate_explanation_text(similarity, is_match, top_attributes):
     
     return explanation
 
+@app.route('/simple')
+def simple_test():
+    """Simple test interface"""
+    return render_template('simple_test.html')
+
 @app.route('/')
 def index():
     """Main dashboard page"""
     return render_template('index.html')
+
+@app.route('/test-verify', methods=['GET'])
+def test_verify():
+    """Test verification endpoint"""
+    return jsonify({
+        'status': 'OK',
+        'model_loaded': model is not None,
+        'functions_available': {
+            'preprocess_image': 'preprocess_image' in globals(),
+            'compute_similarity': 'compute_similarity' in globals(),
+            'generate_mock_attributes': 'generate_mock_attributes' in globals()
+        }
+    })
 
 @app.route('/verify', methods=['POST'])
 def verify_faces():

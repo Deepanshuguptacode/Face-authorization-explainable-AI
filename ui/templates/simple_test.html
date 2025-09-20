@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Face Verification Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .image-preview {
+            max-width: 300px;
+            max-height: 300px;
+            border: 2px dashed #ddd;
+            padding: 20px;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .image-preview img {
+            max-width: 100%;
+            max-height: 250px;
+        }
+        .result-card {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">🔍 Simple Face Verification Test</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>📸 Reference Image</h5>
+                    </div>
+                    <div class="card-body">
+                        <input type="file" id="image1" accept="image/*" class="form-control mb-3">
+                        <div id="preview1" class="image-preview">
+                            <span class="text-muted">Select an image...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>🔍 Query Image</h5>
+                    </div>
+                    <div class="card-body">
+                        <input type="file" id="image2" accept="image/*" class="form-control mb-3">
+                        <div id="preview2" class="image-preview">
+                            <span class="text-muted">Select an image...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <button id="verifyBtn" class="btn btn-primary btn-lg" disabled onclick="verifyImages()">
+                🚀 Verify Images
+            </button>
+            <div id="status" class="mt-2"></div>
+        </div>
+        
+        <div id="results" class="result-card">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>📊 Verification Results</h5>
+                </div>
+                <div class="card-body" id="resultsBody">
+                    <!-- Results will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let uploadedImages = {
+            image1: null,
+            image2: null
+        };
+
+        // Handle image uploads
+        document.getElementById('image1').addEventListener('change', function(e) {
+            handleImageUpload(e, 'preview1', 'image1');
+        });
+
+        document.getElementById('image2').addEventListener('change', function(e) {
+            handleImageUpload(e, 'preview2', 'image2');
+        });
+
+        function handleImageUpload(event, previewId, imageKey) {
+            const file = event.target.files[0];
+            const preview = document.getElementById(previewId);
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                    uploadedImages[imageKey] = file;
+                    checkVerifyButton();
+                };
+                reader.readAsDataURL(file);
+                
+                updateStatus(`✅ ${imageKey === 'image1' ? 'Reference' : 'Query'} image loaded`);
+            }
+        }
+
+        function checkVerifyButton() {
+            const btn = document.getElementById('verifyBtn');
+            if (uploadedImages.image1 && uploadedImages.image2) {
+                btn.disabled = false;
+                btn.className = 'btn btn-primary btn-lg';
+                updateStatus('✅ Ready to verify! Click the button above.');
+            } else {
+                btn.disabled = true;
+                btn.className = 'btn btn-secondary btn-lg';
+            }
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = `<div class="alert alert-info">${message}</div>`;
+        }
+
+        function updateError(message) {
+            document.getElementById('status').innerHTML = `<div class="alert alert-danger">❌ ${message}</div>`;
+        }
+
+        function updateSuccess(message) {
+            document.getElementById('status').innerHTML = `<div class="alert alert-success">✅ ${message}</div>`;
+        }
+
+        async function verifyImages() {
+            if (!uploadedImages.image1 || !uploadedImages.image2) {
+                updateError('Please upload both images first!');
+                return;
+            }
+
+            updateStatus('🔄 Processing images...');
+            document.getElementById('verifyBtn').disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('image1', uploadedImages.image1);
+                formData.append('image2', uploadedImages.image2);
+                formData.append('settings', JSON.stringify({
+                    explanationStyle: 'comprehensive',
+                    showSaliency: true,
+                    showAttributes: true,
+                    enableInteractive: true
+                }));
+
+                console.log('Sending verification request...');
+                const response = await fetch('/verify', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.text();
+                    console.error('Response error:', errorData);
+                    throw new Error(`Server error: ${response.status} - ${errorData}`);
+                }
+
+                const result = await response.json();
+                console.log('Verification result:', result);
+
+                if (result.success) {
+                    displayResults(result);
+                    updateSuccess('Verification completed successfully!');
+                } else {
+                    throw new Error(result.error || 'Verification failed');
+                }
+
+            } catch (error) {
+                console.error('Verification error:', error);
+                updateError(`Verification failed: ${error.message}`);
+            } finally {
+                document.getElementById('verifyBtn').disabled = false;
+            }
+        }
+
+        function displayResults(result) {
+            const resultsDiv = document.getElementById('results');
+            const resultsBody = document.getElementById('resultsBody');
+            
+            const isMatch = result.isMatch ? '✅ MATCH' : '❌ NO MATCH';
+            const matchClass = result.isMatch ? 'text-success' : 'text-danger';
+            
+            resultsBody.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>🎯 Similarity Score</h6>
+                        <div class="progress mb-3">
+                            <div class="progress-bar ${result.isMatch ? 'bg-success' : 'bg-warning'}" 
+                                 style="width: ${result.similarity * 100}%">
+                                ${(result.similarity * 100).toFixed(1)}%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>🏆 Result</h6>
+                        <h4 class="${matchClass}">${isMatch}</h4>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <h6>📝 Explanation</h6>
+                    <p>${result.explanation.text}</p>
+                </div>
+                
+                <div class="mt-3">
+                    <h6>🔍 Detected Attributes</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        ${result.attributes.map(attr => 
+                            `<span class="badge bg-secondary">${attr.name}: ${(attr.confidence * 100).toFixed(0)}%</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
