@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demographics - Face Recognition Explanation Study</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .demographics-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .progress-indicator {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .form-section h5 {
+            color: #495057;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .required-field {
+            color: #dc3545;
+        }
+        
+        .privacy-notice {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .slider-container {
+            margin: 1rem 0;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .form-range::-webkit-slider-thumb {
+            background: #667eea;
+        }
+        
+        .form-range::-moz-range-thumb {
+            background: #667eea;
+            border: none;
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 2rem 0;">
+    <div class="container">
+        <div class="demographics-container">
+            <div class="progress-indicator">
+                <h4><i class="fas fa-user-friends me-2"></i>Demographics Questionnaire</h4>
+                <p class="mb-0">Step 2 of 4 - This information helps us understand our participant demographics</p>
+            </div>
+            
+            <div class="privacy-notice">
+                <i class="fas fa-shield-alt text-primary me-2"></i>
+                <strong>Privacy Protection:</strong> All demographic information is collected anonymously and will only be used for research analysis. You can skip any question you're not comfortable answering.
+            </div>
+            
+            <form id="demographicsForm" action="/study/demographics" method="POST">
+                <!-- Basic Demographics -->
+                <div class="form-section">
+                    <h5><i class="fas fa-user me-2"></i>Basic Information</h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="age" class="form-label">Age <span class="required-field">*</span></label>
+                            <select class="form-select" id="age" name="age" required>
+                                <option value="">Select age range</option>
+                                <option value="18-24">18-24</option>
+                                <option value="25-34">25-34</option>
+                                <option value="35-44">35-44</option>
+                                <option value="45-54">45-54</option>
+                                <option value="55-64">55-64</option>
+                                <option value="65+">65+</option>
+                                <option value="prefer_not_to_say">Prefer not to say</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select class="form-select" id="gender" name="gender">
+                                <option value="">Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="non_binary">Non-binary</option>
+                                <option value="other">Other</option>
+                                <option value="prefer_not_to_say">Prefer not to say</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="education" class="form-label">Education Level</label>
+                            <select class="form-select" id="education" name="education">
+                                <option value="">Select education level</option>
+                                <option value="high_school">High school</option>
+                                <option value="some_college">Some college</option>
+                                <option value="bachelor">Bachelor's degree</option>
+                                <option value="master">Master's degree</option>
+                                <option value="phd">PhD/Doctorate</option>
+                                <option value="other">Other</option>
+                                <option value="prefer_not_to_say">Prefer not to say</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="field" class="form-label">Field of Work/Study</label>
+                            <select class="form-select" id="field" name="field">
+                                <option value="">Select field</option>
+                                <option value="computer_science">Computer Science/IT</option>
+                                <option value="engineering">Engineering</option>
+                                <option value="science">Natural Sciences</option>
+                                <option value="social_science">Social Sciences</option>
+                                <option value="business">Business/Finance</option>
+                                <option value="healthcare">Healthcare</option>
+                                <option value="education">Education</option>
+                                <option value="arts">Arts/Humanities</option>
+                                <option value="other">Other</option>
+                                <option value="prefer_not_to_say">Prefer not to say</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Technology Experience -->
+                <div class="form-section">
+                    <h5><i class="fas fa-laptop me-2"></i>Technology Experience</h5>
+                    
+                    <div class="mb-3">
+                        <label for="tech_comfort" class="form-label">How comfortable are you with technology in general?</label>
+                        <div class="slider-container">
+                            <input type="range" class="form-range" id="tech_comfort" name="tech_comfort" 
+                                   min="1" max="7" value="4" oninput="updateSliderValue('tech_comfort', this.value)">
+                            <div class="slider-labels">
+                                <span>Not at all<br>comfortable</span>
+                                <span>Neutral</span>
+                                <span>Very<br>comfortable</span>
+                            </div>
+                            <div class="text-center mt-2">
+                                <small class="text-muted">Current rating: <span id="tech_comfort_value">4</span>/7</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Have you used any of the following technologies? (Check all that apply)</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="face_unlock" name="tech_experience" value="face_unlock">
+                                    <label class="form-check-label" for="face_unlock">Face unlock on phone/laptop</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="photo_tagging" name="tech_experience" value="photo_tagging">
+                                    <label class="form-check-label" for="photo_tagging">Automatic photo tagging</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="security_cameras" name="tech_experience" value="security_cameras">
+                                    <label class="form-check-label" for="security_cameras">Security camera systems</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="ai_assistants" name="tech_experience" value="ai_assistants">
+                                    <label class="form-check-label" for="ai_assistants">AI assistants (Siri, Alexa, etc.)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="machine_learning" name="tech_experience" value="machine_learning">
+                                    <label class="form-check-label" for="machine_learning">Machine learning tools</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="none_above" name="tech_experience" value="none">
+                                    <label class="form-check-label" for="none_above">None of the above</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI/ML Familiarity -->
+                <div class="form-section">
+                    <h5><i class="fas fa-brain me-2"></i>AI & Machine Learning Familiarity</h5>
+                    
+                    <div class="mb-3">
+                        <label for="ai_knowledge" class="form-label">How familiar are you with artificial intelligence and machine learning?</label>
+                        <div class="slider-container">
+                            <input type="range" class="form-range" id="ai_knowledge" name="ai_knowledge" 
+                                   min="1" max="7" value="4" oninput="updateSliderValue('ai_knowledge', this.value)">
+                            <div class="slider-labels">
+                                <span>Not familiar<br>at all</span>
+                                <span>Somewhat<br>familiar</span>
+                                <span>Very<br>familiar</span>
+                            </div>
+                            <div class="text-center mt-2">
+                                <small class="text-muted">Current rating: <span id="ai_knowledge_value">4</span>/7</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="ai_trust" class="form-label">In general, how much do you trust AI systems to make important decisions?</label>
+                        <div class="slider-container">
+                            <input type="range" class="form-range" id="ai_trust" name="ai_trust" 
+                                   min="1" max="7" value="4" oninput="updateSliderValue('ai_trust', this.value)">
+                            <div class="slider-labels">
+                                <span>Don't trust<br>at all</span>
+                                <span>Neutral</span>
+                                <span>Trust<br>completely</span>
+                            </div>
+                            <div class="text-center mt-2">
+                                <small class="text-muted">Current rating: <span id="ai_trust_value">4</span>/7</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Have you heard of any of these AI concepts? (Check all that apply)</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="explainable_ai" name="ai_concepts" value="explainable_ai">
+                                    <label class="form-check-label" for="explainable_ai">Explainable AI</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="bias_fairness" name="ai_concepts" value="bias_fairness">
+                                    <label class="form-check-label" for="bias_fairness">AI bias and fairness</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="deep_learning" name="ai_concepts" value="deep_learning">
+                                    <label class="form-check-label" for="deep_learning">Deep learning</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="neural_networks" name="ai_concepts" value="neural_networks">
+                                    <label class="form-check-label" for="neural_networks">Neural networks</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="computer_vision" name="ai_concepts" value="computer_vision">
+                                    <label class="form-check-label" for="computer_vision">Computer vision</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="none_ai_concepts" name="ai_concepts" value="none">
+                                    <label class="form-check-label" for="none_ai_concepts">None of the above</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Optional Comments -->
+                <div class="form-section">
+                    <h5><i class="fas fa-comment me-2"></i>Additional Information (Optional)</h5>
+                    <div class="mb-3">
+                        <label for="comments" class="form-label">Any additional comments or relevant background information?</label>
+                        <textarea class="form-control" id="comments" name="comments" rows="3" 
+                                  placeholder="e.g., Previous experience with face recognition systems, concerns about AI, etc."></textarea>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="/study/consent" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        Continue to Study <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateSliderValue(sliderId, value) {
+            document.getElementById(sliderId + '_value').textContent = value;
+        }
+        
+        // Handle exclusive checkboxes
+        document.getElementById('none_above').addEventListener('change', function() {
+            if (this.checked) {
+                const techCheckboxes = document.querySelectorAll('input[name="tech_experience"]:not(#none_above)');
+                techCheckboxes.forEach(cb => cb.checked = false);
+            }
+        });
+        
+        document.getElementById('none_ai_concepts').addEventListener('change', function() {
+            if (this.checked) {
+                const aiCheckboxes = document.querySelectorAll('input[name="ai_concepts"]:not(#none_ai_concepts)');
+                aiCheckboxes.forEach(cb => cb.checked = false);
+            }
+        });
+        
+        // Uncheck "none" options when other options are selected
+        document.querySelectorAll('input[name="tech_experience"]:not(#none_above)').forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('none_above').checked = false;
+                }
+            });
+        });
+        
+        document.querySelectorAll('input[name="ai_concepts"]:not(#none_ai_concepts)').forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('none_ai_concepts').checked = false;
+                }
+            });
+        });
+        
+        // Form validation
+        document.getElementById('demographicsForm').addEventListener('submit', function(e) {
+            const age = document.getElementById('age').value;
+            if (!age) {
+                e.preventDefault();
+                alert('Please select your age range to continue.');
+                return false;
+            }
+            
+            // Show loading state
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

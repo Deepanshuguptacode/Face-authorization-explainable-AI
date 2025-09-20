@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Accessibility enhancements -->
+    <meta name="description" content="Explainable Face Recognition Dashboard - Upload images to verify identity with AI explanations">
+    <meta name="keywords" content="face recognition, AI explanation, identity verification, computer vision">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Screen reader support -->
+    <style>
+        .sr-only {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+        
+        .accessible-description {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            .card {
+                border: 2px solid #000;
+            }
+            .btn-primary {
+                background-color: #000;
+                border-color: #000;
+            }
+            .progress-bar {
+                background-color: #000;
+            }
+        }
+        
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Focus indicators */
+        .form-control:focus,
+        .btn:focus,
+        button:focus,
+        [tabindex]:focus {
+            outline: 2px solid #0066cc;
+            outline-offset: 2px;
+        }
+        
+        /* Skip link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: #0066cc;
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 3px;
+            z-index: 9999;
+        }
+        
+        .skip-link:focus {
+            top: 6px;
+        }
+    </style>
+    <title>Explainable Face Recognition</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Skip navigation link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Screen reader description -->
+    <div class="sr-only">
+        <h1>Face Recognition Explanation Dashboard</h1>
+        <p>This is an interactive dashboard for face recognition with explanations. You can upload two face images to verify if they show the same person, and receive detailed explanations about how the AI system made its decision.</p>
+    </div>
+    
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary" role="navigation" aria-label="Main navigation">
+        <div class="container">
+            <a class="navbar-brand" href="#" aria-label="Explainable Face Recognition Dashboard Home">
+                <i class="fas fa-search-plus me-2" aria-hidden="true"></i>
+                Explainable Face Recognition
+            </a>
+            
+            <!-- Accessibility Toggle -->
+            <div class="navbar-nav ms-auto">
+                <button class="btn btn-outline-light btn-sm" id="accessibilityToggle" 
+                        onclick="toggleAccessibility()" 
+                        aria-label="Toggle high contrast and accessibility mode"
+                        title="Toggle accessibility mode">
+                    <i class="fas fa-universal-access" aria-hidden="true"></i>
+                    <span class="ms-1">Accessibility</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- Text description of dashboard functionality -->
+        <div class="accessible-description">
+            <h2 class="sr-only">How to use this dashboard</h2>
+            <p><strong>Instructions:</strong> This dashboard allows you to verify if two face images show the same person. Upload a reference image and a query image using the file inputs below. The system will analyze the images and provide a verification result along with explanations including attention maps, similar prototypes, and attribute analysis.</p>
+        </div>
+        
+        <!-- Main Dashboard -->
+        <div class="row" id="main-content" role="main">
+            <!-- Control Panel -->
+            <div class="col-lg-3">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <i class="fas fa-cog me-2"></i>Controls
+                    </div>
+                    <div class="card-body">
+                        <!-- Image Upload -->
+                        <div class="mb-4">
+                            <h6 class="text-muted">📁 Upload Images</h6>
+                            <div class="mb-3">
+                                <label for="image1" class="form-label">
+                                    <strong>Reference Image</strong>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" class="form-control" id="image1" accept="image/*" 
+                                       onchange="loadImage(this, 'preview1')" 
+                                       aria-describedby="image1Help image1Description"
+                                       aria-required="true">
+                                <div id="image1Help" class="form-text">Upload the reference face image (JPG, PNG, GIF)</div>
+                                <div id="image1Description" class="sr-only">
+                                    This should be a clear photo of a person's face that will serve as the reference for comparison. The image should be well-lit with the face clearly visible.
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="image2" class="form-label">
+                                    <strong>Query Image</strong>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" class="form-control" id="image2" accept="image/*" 
+                                       onchange="loadImage(this, 'preview2')" 
+                                       aria-describedby="image2Help image2Description"
+                                       aria-required="true">
+                                <div id="image2Help" class="form-text">Upload the query face image to compare (JPG, PNG, GIF)</div>
+                                <div id="image2Description" class="sr-only">
+                                    This should be another photo of a face that you want to compare against the reference image. The system will determine if both images show the same person.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Explanation Settings -->
+                        <div class="mb-4">
+                            <h6 class="text-muted">⚙️ Explanation Settings</h6>
+                            <div class="mb-3">
+                                <label for="explanationStyle" class="form-label">Style</label>
+                                <select class="form-select" id="explanationStyle">
+                                    <option value="brief">Brief</option>
+                                    <option value="comprehensive" selected>Comprehensive</option>
+                                    <option value="technical">Technical</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="showSaliency" checked>
+                                <label class="form-check-label" for="showSaliency">
+                                    Show Attention Maps
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="showAttributes" checked>
+                                <label class="form-check-label" for="showAttributes">
+                                    Show Attributes
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="enableInteractive" checked>
+                                <label class="form-check-label" for="enableInteractive">
+                                    Interactive Features
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" onclick="runVerification()" id="verifyBtn" disabled>
+                                <i class="fas fa-play me-2"></i>Run Verification
+                            </button>
+                            <button class="btn btn-secondary" onclick="loadDemoImages()">
+                                <i class="fas fa-play-circle me-2"></i>Load Demo
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="clearAll()">
+                                <i class="fas fa-broom me-2"></i>Clear All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <!-- Verification Results -->
+                <div class="card shadow-sm mb-4" id="resultsCard" style="display: none;">
+                    <div class="card-header bg-success text-white">
+                        <i class="fas fa-chart-line me-2"></i>Verification Results
+                    </div>
+                    <div class="card-body">
+                        <!-- Image Comparison Row -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <h6 class="text-muted">📸 Reference Image</h6>
+                                    <div class="image-container mb-3">
+                                        <img id="preview1" class="img-fluid rounded shadow-sm" 
+                                             alt="Reference face image" style="max-height: 200px;">
+                                    </div>
+                                    <div id="saliency1Container" style="display: none;">
+                                        <h6 class="text-muted">🎯 Attention Map</h6>
+                                        <img id="saliency1" class="img-fluid rounded shadow-sm" 
+                                             alt="Attention map for reference image" style="max-height: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <div class="verification-score-container">
+                                        <div id="matchResult" class="match-score match-pending">
+                                            <div class="score-text">ANALYZING...</div>
+                                            <div class="score-value">---</div>
+                                        </div>
+                                        
+                                        <!-- Confidence Gauge -->
+                                        <div class="confidence-gauge mt-3">
+                                            <div class="gauge-container">
+                                                <canvas id="confidenceGauge" width="200" height="100"></canvas>
+                                            </div>
+                                            <div class="gauge-label">Similarity Score</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <h6 class="text-muted">📸 Query Image</h6>
+                                    <div class="image-container mb-3">
+                                        <img id="preview2" class="img-fluid rounded shadow-sm" 
+                                             alt="Query face image" style="max-height: 200px;">
+                                    </div>
+                                    <div id="saliency2Container" style="display: none;">
+                                        <h6 class="text-muted">🎯 Attention Map</h6>
+                                        <img id="saliency2" class="img-fluid rounded shadow-sm" 
+                                             alt="Attention map for query image" style="max-height: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attribute Analysis -->
+                <div class="card shadow-sm mb-4" id="attributesCard" style="display: none;">
+                    <div class="card-header bg-info text-white">
+                        <i class="fas fa-tags me-2"></i>Facial Attribute Analysis
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">📊 Confidence Levels</h6>
+                                <div id="attributesList"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">📈 Attribute Chart</h6>
+                                <canvas id="attributeChart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Explanation -->
+                <div class="card shadow-sm mb-4" id="explanationCard" style="display: none;">
+                    <div class="card-header bg-warning text-dark">
+                        <i class="fas fa-comments me-2"></i>AI Explanation
+                    </div>
+                    <div class="card-body">
+                        <div class="explanation-text" id="explanationText">
+                            <!-- Explanation content will be inserted here -->
+                        </div>
+                        
+                        <!-- Accessibility text -->
+                        <div class="accessibility-text mt-3" id="accessibilityText" style="display: none;">
+                            <strong><i class="fas fa-universal-access me-2"></i>Screen Reader Description:</strong>
+                            <span id="accessibilityDescription"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Features -->
+                <div class="card shadow-sm" id="interactiveCard" style="display: none;">
+                    <div class="card-header bg-secondary text-white">
+                        <i class="fas fa-gamepad me-2"></i>Interactive Explanations
+                    </div>
+                    <div class="card-body">
+                        <!-- Interactive buttons -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-primary w-100" onclick="showPrototypes()">
+                                    <i class="fas fa-users me-2"></i>Show Prototypes
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-secondary w-100" onclick="addGlasses()">
+                                    <i class="fas fa-glasses me-2"></i>Add/Remove Glasses
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-success w-100" onclick="changeExpression()">
+                                    <i class="fas fa-smile me-2"></i>Change Expression
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Interactive content area -->
+                        <div id="interactiveContent">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-mouse-pointer fa-2x mb-3"></i>
+                                <p>Click the buttons above to explore interactive explanations</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mb-0">Processing images...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    
+    <!-- Accessibility enhancements script -->
+    <script>
+        // Accessibility toggle function
+        function toggleAccessibility() {
+            const body = document.body;
+            const isHighContrast = body.classList.toggle('high-contrast');
+            
+            // Update toggle button text
+            const toggleBtn = document.getElementById('accessibilityToggle');
+            if (isHighContrast) {
+                toggleBtn.innerHTML = '<i class="fas fa-universal-access" aria-hidden="true"></i> <span class="ms-1">High Contrast ON</span>';
+                toggleBtn.setAttribute('aria-label', 'Disable high contrast and accessibility mode');
+                
+                // Store preference
+                localStorage.setItem('accessibility-mode', 'true');
+                
+                // Announce to screen readers
+                announceToScreenReader('High contrast mode enabled');
+            } else {
+                toggleBtn.innerHTML = '<i class="fas fa-universal-access" aria-hidden="true"></i> <span class="ms-1">Accessibility</span>';
+                toggleBtn.setAttribute('aria-label', 'Enable high contrast and accessibility mode');
+                
+                // Remove preference
+                localStorage.removeItem('accessibility-mode');
+                
+                // Announce to screen readers
+                announceToScreenReader('High contrast mode disabled');
+            }
+            
+            // Add high contrast styles
+            if (isHighContrast && !document.getElementById('high-contrast-styles')) {
+                const style = document.createElement('style');
+                style.id = 'high-contrast-styles';
+                style.textContent = `
+                    .high-contrast {
+                        background: #000 !important;
+                        color: #fff !important;
+                    }
+                    .high-contrast .card {
+                        background: #000 !important;
+                        border: 2px solid #fff !important;
+                        color: #fff !important;
+                    }
+                    .high-contrast .card-header {
+                        background: #fff !important;
+                        color: #000 !important;
+                    }
+                    .high-contrast .btn-primary {
+                        background: #fff !important;
+                        color: #000 !important;
+                        border: 2px solid #fff !important;
+                    }
+                    .high-contrast .btn-outline-primary {
+                        background: #000 !important;
+                        color: #fff !important;
+                        border: 2px solid #fff !important;
+                    }
+                    .high-contrast .progress-bar {
+                        background: #fff !important;
+                    }
+                    .high-contrast .text-muted {
+                        color: #ccc !important;
+                    }
+                    .high-contrast .form-control {
+                        background: #000 !important;
+                        color: #fff !important;
+                        border: 2px solid #fff !important;
+                    }
+                    .high-contrast .navbar {
+                        background: #000 !important;
+                    }
+                `;
+                document.head.appendChild(style);
+            } else if (!isHighContrast) {
+                const style = document.getElementById('high-contrast-styles');
+                if (style) style.remove();
+            }
+        }
+        
+        // Screen reader announcement function
+        function announceToScreenReader(message) {
+            const announcement = document.createElement('div');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.setAttribute('aria-atomic', 'true');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            
+            // Remove after announcement
+            setTimeout(() => {
+                document.body.removeChild(announcement);
+            }, 1000);
+        }
+        
+        // Add text alternatives for images
+        function addImageTextAlternative(imgElement, description) {
+            if (imgElement) {
+                imgElement.setAttribute('alt', description);
+                
+                // Add detailed description for screen readers
+                const descId = 'img-desc-' + Math.random().toString(36).substr(2, 9);
+                const descDiv = document.createElement('div');
+                descDiv.id = descId;
+                descDiv.className = 'sr-only';
+                descDiv.textContent = description;
+                imgElement.parentNode.appendChild(descDiv);
+                imgElement.setAttribute('aria-describedby', descId);
+            }
+        }
+        
+        // Enhanced keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            // Alt + H for help/instructions
+            if (e.altKey && e.key === 'h') {
+                e.preventDefault();
+                const helpText = `
+                Face Recognition Dashboard Help:
+                - Tab: Navigate between controls
+                - Enter/Space: Activate buttons
+                - Alt+H: Show this help
+                - Alt+A: Toggle accessibility mode
+                - Escape: Close modals or reset focus
+                
+                Upload two face images using the file inputs, then click "Verify Identity" to see if they show the same person.
+                `;
+                announceToScreenReader(helpText);
+                alert(helpText);
+            }
+            
+            // Alt + A for accessibility toggle
+            if (e.altKey && e.key === 'a') {
+                e.preventDefault();
+                toggleAccessibility();
+            }
+            
+            // Escape to reset focus
+            if (e.key === 'Escape') {
+                document.activeElement.blur();
+                document.getElementById('main-content').focus();
+            }
+        });
+        
+        // Load accessibility preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('accessibility-mode') === 'true') {
+                toggleAccessibility();
+            }
+            
+            // Add focus management for image previews
+            const imageInputs = document.querySelectorAll('input[type="file"]');
+            imageInputs.forEach(input => {
+                input.addEventListener('change', function(e) {
+                    if (e.target.files && e.target.files[0]) {
+                        const fileName = e.target.files[0].name;
+                        announceToScreenReader(`Image selected: ${fileName}`);
+                    }
+                });
+            });
+            
+            // Make result sections focusable for screen readers
+            const resultSections = document.querySelectorAll('.card');
+            resultSections.forEach((section, index) => {
+                section.setAttribute('tabindex', '0');
+                section.setAttribute('role', 'region');
+                const header = section.querySelector('.card-header');
+                if (header) {
+                    const headerId = 'section-header-' + index;
+                    header.id = headerId;
+                    section.setAttribute('aria-labelledby', headerId);
+                }
+            });
+        });
+        
+        // Enhanced image loading with text alternatives
+        function loadImageWithAccessibility(input, previewId) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById(previewId);
+                    if (preview) {
+                        preview.src = e.target.result;
+                        
+                        // Add meaningful alt text
+                        const altText = `${input.labels[0].textContent} - uploaded image file: ${file.name}`;
+                        addImageTextAlternative(preview, altText);
+                        
+                        // Announce successful upload
+                        announceToScreenReader(`Image uploaded successfully for ${input.labels[0].textContent}`);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>

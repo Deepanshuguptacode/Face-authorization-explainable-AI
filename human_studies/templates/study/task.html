@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explanation Evaluation Task - Face Recognition Study</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .task-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .progress-indicator {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .task-instruction {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .image-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        
+        .verification-result {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .explanation-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .rating-section {
+            background: #fff;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .rating-scale {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 0 1rem;
+        }
+        
+        .rating-option {
+            text-align: center;
+            flex: 1;
+            margin: 0 0.5rem;
+        }
+        
+        .rating-option input[type="radio"] {
+            transform: scale(1.5);
+            margin-bottom: 0.5rem;
+        }
+        
+        .rating-option label {
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .likert-scale {
+            display: grid;
+            grid-template-columns: 2fr repeat(7, 1fr);
+            gap: 1rem;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .likert-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .likert-option {
+            text-align: center;
+        }
+        
+        .likert-option input[type="radio"] {
+            transform: scale(1.3);
+        }
+        
+        .likert-endpoints {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .explanation-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .confidence-bar {
+            background: #e9ecef;
+            border-radius: 20px;
+            height: 8px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+            border-radius: 20px;
+            transition: width 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .required-field {
+            color: #dc3545;
+        }
+        
+        .task-timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+        
+        .interactive-demo {
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .demo-btn:hover {
+            background: #5a67d8;
+        }
+        
+        .attribute-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .attribute-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .attribute-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .task-container {
+                padding: 1rem;
+            }
+            
+            .likert-scale {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .rating-scale {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .demo-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 2rem 0;">
+    <div class="task-timer">
+        <i class="fas fa-clock me-2"></i>
+        Task <span id="currentTask">1</span> of <span id="totalTasks">5</span> | 
+        Time: <span id="taskTimer">00:00</span>
+    </div>
+    
+    <div class="container">
+        <div class="task-container">
+            <div class="progress-indicator">
+                <h4><i class="fas fa-search me-2"></i>Face Recognition Explanation Evaluation</h4>
+                <p class="mb-0">Step 3 of 4 - Please carefully review the explanation and provide your ratings</p>
+                <div class="progress mt-2" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar" style="width: 60%"></div>
+                </div>
+            </div>
+            
+            <div class="task-instruction">
+                <h5><i class="fas fa-info-circle me-2"></i>Task Instructions</h5>
+                <p class="mb-2">You will be shown a face recognition result and various explanations for why the system made its decision. Please:</p>
+                <ol class="mb-0">
+                    <li>Carefully examine the input image and verification result</li>
+                    <li>Review all provided explanations (visual highlights, similar prototypes, attribute analysis)</li>
+                    <li>Try the interactive features to explore the system's behavior</li>
+                    <li>Rate your understanding, trust, and the quality of explanations</li>
+                </ol>
+                <div class="alert alert-warning mt-2 mb-0">
+                    <small><strong>Note:</strong> Take your time to explore all explanations before rating. There are no right or wrong answers - we want your honest assessment.</small>
+                </div>
+            </div>
+            
+            <!-- Face Recognition Result -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="image-container">
+                        <h6>Input Image</h6>
+                        <img id="inputImage" src="/static/sample_images/input.jpg" alt="Input face image" class="explanation-image" style="max-height: 300px;">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="image-container">
+                        <h6>Reference Image</h6>
+                        <img id="referenceImage" src="/static/sample_images/reference.jpg" alt="Reference face image" class="explanation-image" style="max-height: 300px;">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="verification-result">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5><i class="fas fa-check-circle text-success me-2"></i>Verification Result: <span id="verificationResult">MATCH</span></h5>
+                        <p class="mb-2">The system determined that these images show the <strong>same person</strong>.</p>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <small class="text-muted">Confidence Score:</small>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 87%"></div>
+                                </div>
+                                <small><strong>87%</strong> confident in match</small>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted">Match Threshold:</small>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 75%; background: #6c757d;"></div>
+                                </div>
+                                <small>Threshold: <strong>75%</strong></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="h2 text-success">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <p class="mb-0"><strong>Status: VERIFIED</strong></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Visual Explanations -->
+            <div class="explanation-section">
+                <h5><i class="fas fa-eye me-2"></i>Visual Explanations</h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Attention Heatmap</h6>
+                        <p class="small text-muted">Red areas show where the system focused most during comparison:</p>
+                        <img src="/static/explanations/saliency_map.jpg" alt="Attention heatmap" class="explanation-image">
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Feature Similarity</h6>
+                        <p class="small text-muted">Green highlights show matching facial features:</p>
+                        <img src="/static/explanations/feature_overlay.jpg" alt="Feature similarity" class="explanation-image">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Attribute Analysis -->
+            <div class="explanation-section">
+                <h5><i class="fas fa-list me-2"></i>Facial Attribute Analysis</h5>
+                <p class="small text-muted">The system analyzed these facial characteristics:</p>
+                
+                <div class="attribute-list">
+                    <div class="attribute-item">
+                        <div class="attribute-label">Eye Shape</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 92%; background: #28a745;"></div>
+                        </div>
+                        <small>92% similarity</small>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-label">Nose Shape</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 88%; background: #28a745;"></div>
+                        </div>
+                        <small>88% similarity</small>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-label">Face Shape</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 85%; background: #28a745;"></div>
+                        </div>
+                        <small>85% similarity</small>
+                    </div>
+                    <div class="attribute-item">
+                        <div class="attribute-label">Jaw Line</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 79%; background: #ffc107;"></div>
+                        </div>
+                        <small>79% similarity</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Interactive Demo -->
+            <div class="interactive-demo">
+                <h5><i class="fas fa-hand-pointer me-2"></i>Interactive Exploration</h5>
+                <p class="small text-muted">Try these interactive features to understand how the system works:</p>
+                
+                <div class="demo-controls">
+                    <button class="demo-btn" onclick="showPrototypes()">
+                        <i class="fas fa-users me-2"></i>Show Similar Faces
+                    </button>
+                    <button class="demo-btn" onclick="runCounterfactual()">
+                        <i class="fas fa-glasses me-2"></i>Test with Glasses
+                    </button>
+                    <button class="demo-btn" onclick="sensitivityAnalysis()">
+                        <i class="fas fa-sliders-h me-2"></i>Sensitivity Analysis
+                    </button>
+                    <button class="demo-btn" onclick="explainDecision()">
+                        <i class="fas fa-brain me-2"></i>Explain Decision
+                    </button>
+                </div>
+                
+                <div id="interactiveResult" class="mt-3" style="display: none;">
+                    <div class="alert alert-info">
+                        <div id="interactiveContent"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rating Form -->
+            <form id="taskForm" action="/study/submit_task" method="POST">
+                <input type="hidden" name="task_id" value="1">
+                <input type="hidden" name="start_time" id="startTime">
+                
+                <!-- Understanding Rating -->
+                <div class="rating-section">
+                    <h5><i class="fas fa-lightbulb me-2"></i>Understanding <span class="required-field">*</span></h5>
+                    <p class="text-muted">How well do you understand why the system made this decision?</p>
+                    
+                    <div class="likert-scale">
+                        <div class="likert-label">Understanding:</div>
+                        <div class="likert-option"><input type="radio" name="understanding" value="1" required><br>1</div>
+                        <div class="likert-option"><input type="radio" name="understanding" value="2"><br>2</div>
+                        <div class="likert-option"><input type="radio" name="understanding" value="3"><br>3</div>
+                        <div class="likert-option"><input type="radio" name="understanding" value="4"><br>4</div>
+                        <div class="likert-option"><input type="radio" name="understanding" value="5"><br>5</div>
+                        <div class="likert-option"><input type="radio" name="understanding" value="6"><br>6</div>
+                        <div class="likert-option"><input type="radio" name="understanding" value="7"><br>7</div>
+                    </div>
+                    <div class="likert-endpoints">
+                        <span>Don't understand at all</span>
+                        <span>Completely understand</span>
+                    </div>
+                </div>
+                
+                <!-- Trust Rating -->
+                <div class="rating-section">
+                    <h5><i class="fas fa-shield-check me-2"></i>Trust <span class="required-field">*</span></h5>
+                    <p class="text-muted">Based on the explanations provided, how much do you trust this decision?</p>
+                    
+                    <div class="likert-scale">
+                        <div class="likert-label">Trust Level:</div>
+                        <div class="likert-option"><input type="radio" name="trust" value="1" required><br>1</div>
+                        <div class="likert-option"><input type="radio" name="trust" value="2"><br>2</div>
+                        <div class="likert-option"><input type="radio" name="trust" value="3"><br>3</div>
+                        <div class="likert-option"><input type="radio" name="trust" value="4"><br>4</div>
+                        <div class="likert-option"><input type="radio" name="trust" value="5"><br>5</div>
+                        <div class="likert-option"><input type="radio" name="trust" value="6"><br>6</div>
+                        <div class="likert-option"><input type="radio" name="trust" value="7"><br>7</div>
+                    </div>
+                    <div class="likert-endpoints">
+                        <span>Don't trust at all</span>
+                        <span>Trust completely</span>
+                    </div>
+                </div>
+                
+                <!-- Explanation Quality -->
+                <div class="rating-section">
+                    <h5><i class="fas fa-star me-2"></i>Explanation Quality <span class="required-field">*</span></h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="text-muted"><strong>Helpfulness:</strong> How helpful were the explanations?</p>
+                            <div class="rating-scale">
+                                <div class="rating-option">
+                                    <input type="radio" name="helpfulness" value="1" required>
+                                    <label>1<br>Not helpful</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="helpfulness" value="2">
+                                    <label>2</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="helpfulness" value="3">
+                                    <label>3</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="helpfulness" value="4">
+                                    <label>4</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="helpfulness" value="5">
+                                    <label>5<br>Very helpful</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <p class="text-muted"><strong>Clarity:</strong> How clear were the explanations?</p>
+                            <div class="rating-scale">
+                                <div class="rating-option">
+                                    <input type="radio" name="clarity" value="1" required>
+                                    <label>1<br>Very unclear</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="clarity" value="2">
+                                    <label>2</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="clarity" value="3">
+                                    <label>3</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="clarity" value="4">
+                                    <label>4</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="clarity" value="5">
+                                    <label>5<br>Very clear</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <p class="text-muted"><strong>Completeness:</strong> How complete were the explanations?</p>
+                            <div class="rating-scale">
+                                <div class="rating-option">
+                                    <input type="radio" name="completeness" value="1" required>
+                                    <label>1<br>Incomplete</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="completeness" value="2">
+                                    <label>2</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="completeness" value="3">
+                                    <label>3</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="completeness" value="4">
+                                    <label>4</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="completeness" value="5">
+                                    <label>5<br>Complete</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <p class="text-muted"><strong>Accuracy:</strong> How accurate did the explanations seem?</p>
+                            <div class="rating-scale">
+                                <div class="rating-option">
+                                    <input type="radio" name="accuracy" value="1" required>
+                                    <label>1<br>Inaccurate</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="accuracy" value="2">
+                                    <label>2</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="accuracy" value="3">
+                                    <label>3</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="accuracy" value="4">
+                                    <label>4</label>
+                                </div>
+                                <div class="rating-option">
+                                    <input type="radio" name="accuracy" value="5">
+                                    <label>5<br>Accurate</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Open-ended Feedback -->
+                <div class="rating-section">
+                    <h5><i class="fas fa-comment me-2"></i>Additional Feedback</h5>
+                    
+                    <div class="mb-3">
+                        <label for="most_helpful" class="form-label">What was most helpful about the explanations?</label>
+                        <textarea class="form-control" id="most_helpful" name="most_helpful" rows="2" 
+                                  placeholder="e.g., The visual heatmap clearly showed which features were important..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="least_helpful" class="form-label">What was least helpful or confusing?</label>
+                        <textarea class="form-control" id="least_helpful" name="least_helpful" rows="2" 
+                                  placeholder="e.g., The confidence scores were hard to interpret..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="improvements" class="form-label">How could the explanations be improved?</label>
+                        <textarea class="form-control" id="improvements" name="improvements" rows="2" 
+                                  placeholder="e.g., Add more detailed text descriptions..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary" onclick="previousTask()">
+                        <i class="fas fa-arrow-left me-2"></i>Previous
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Next Task <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Task timing
+        let startTime = Date.now();
+        let timerInterval;
+        
+        document.getElementById('startTime').value = startTime;
+        
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('taskTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        timerInterval = setInterval(updateTimer, 1000);
+        
+        // Interactive features
+        function showPrototypes() {
+            document.getElementById('interactiveResult').style.display = 'block';
+            document.getElementById('interactiveContent').innerHTML = `
+                <h6><i class="fas fa-users me-2"></i>Similar Faces in Training Data</h6>
+                <p>Here are 3 faces from the training data that are most similar to the input:</p>
+                <div class="row">
+                    <div class="col-4"><img src="/static/prototypes/proto1.jpg" class="img-fluid rounded" alt="Similar face 1"></div>
+                    <div class="col-4"><img src="/static/prototypes/proto2.jpg" class="img-fluid rounded" alt="Similar face 2"></div>
+                    <div class="col-4"><img src="/static/prototypes/proto3.jpg" class="img-fluid rounded" alt="Similar face 3"></div>
+                </div>
+                <small class="text-muted">These prototypes help explain what features the system considers important for this person.</small>
+            `;
+        }
+        
+        function runCounterfactual() {
+            document.getElementById('interactiveResult').style.display = 'block';
+            document.getElementById('interactiveContent').innerHTML = `
+                <h6><i class="fas fa-glasses me-2"></i>Counterfactual Analysis: Adding Glasses</h6>
+                <p>Here's how the system would react if glasses were added to the input image:</p>
+                <div class="row align-items-center">
+                    <div class="col-6">
+                        <img src="/static/counterfactuals/with_glasses.jpg" class="img-fluid rounded" alt="Face with glasses">
+                        <p class="small mt-2">Modified image</p>
+                    </div>
+                    <div class="col-6">
+                        <div class="alert alert-warning">
+                            <strong>New Result:</strong> 73% confidence (still MATCH)<br>
+                            <small>Adding glasses reduced confidence by 14%, but result remains the same.</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function sensitivityAnalysis() {
+            document.getElementById('interactiveResult').style.display = 'block';
+            document.getElementById('interactiveContent').innerHTML = `
+                <h6><i class="fas fa-sliders-h me-2"></i>Feature Sensitivity Analysis</h6>
+                <p>This shows how much each facial region contributes to the decision:</p>
+                <div class="row">
+                    <div class="col-8">
+                        <div>Eyes region: <div class="confidence-bar"><div class="confidence-fill" style="width: 45%; background: #28a745;"></div></div> 45% contribution</div>
+                        <div>Nose region: <div class="confidence-bar"><div class="confidence-fill" style="width: 30%; background: #28a745;"></div></div> 30% contribution</div>
+                        <div>Mouth region: <div class="confidence-bar"><div class="confidence-fill" style="width: 15%; background: #ffc107;"></div></div> 15% contribution</div>
+                        <div>Face outline: <div class="confidence-bar"><div class="confidence-fill" style="width: 10%; background: #ffc107;"></div></div> 10% contribution</div>
+                    </div>
+                    <div class="col-4">
+                        <img src="/static/sensitivity/regions.jpg" class="img-fluid rounded" alt="Face regions">
+                    </div>
+                </div>
+            `;
+        }
+        
+        function explainDecision() {
+            document.getElementById('interactiveResult').style.display = 'block';
+            document.getElementById('interactiveContent').innerHTML = `
+                <h6><i class="fas fa-brain me-2"></i>Decision Explanation</h6>
+                <p><strong>Why this is a MATCH:</strong></p>
+                <ul>
+                    <li>Eye shape and position are highly similar (92% match)</li>
+                    <li>Nose structure matches well (88% similarity)</li>
+                    <li>Overall facial geometry is consistent</li>
+                    <li>Key discriminative features align across both images</li>
+                </ul>
+                <p><strong>Confidence factors:</strong></p>
+                <ul>
+                    <li>✓ Multiple facial features exceed similarity threshold</li>
+                    <li>✓ No contradictory evidence found</li>
+                    <li>⚠ Some variation in lighting conditions</li>
+                </ul>
+            `;
+        }
+        
+        function previousTask() {
+            if (confirm('Are you sure you want to go back? Your current responses will be lost.')) {
+                window.location.href = '/study/demographics';
+            }
+        }
+        
+        // Form validation and submission
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            // Check required fields
+            const requiredFields = ['understanding', 'trust', 'helpfulness', 'clarity', 'completeness', 'accuracy'];
+            const missing = requiredFields.filter(field => !document.querySelector(`input[name="${field}"]:checked`));
+            
+            if (missing.length > 0) {
+                e.preventDefault();
+                alert('Please complete all required ratings before continuing.');
+                return false;
+            }
+            
+            // Record completion time
+            const completionTime = Date.now() - startTime;
+            const hiddenTime = document.createElement('input');
+            hiddenTime.type = 'hidden';
+            hiddenTime.name = 'completion_time';
+            hiddenTime.value = completionTime;
+            this.appendChild(hiddenTime);
+            
+            // Show loading state
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+            submitBtn.disabled = true;
+            
+            clearInterval(timerInterval);
+        });
+        
+        // Auto-save progress periodically
+        setInterval(function() {
+            const formData = new FormData(document.getElementById('taskForm'));
+            // Could implement auto-save here if needed
+        }, 30000); // Every 30 seconds
+    </script>
+</body>
+</html>

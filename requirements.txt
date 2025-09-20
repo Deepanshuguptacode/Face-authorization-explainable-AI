@@ -1,0 +1,65 @@
+# Face Recognition Explanation System - Demo Requirements
+# Phase 6: User Interface, Explanations UX, and Human Studies
+
+# Core Dependencies
+Flask==2.3.3
+Streamlit==1.28.1
+Werkzeug==2.3.7
+
+# Data Processing
+numpy==1.24.3
+pandas==2.1.1
+opencv-python==4.8.1.78
+Pillow==10.0.1
+
+# Machine Learning & Deep Learning
+torch==2.0.1
+torchvision==0.15.2
+scikit-learn==1.3.0
+
+# Visualization
+matplotlib==3.7.2
+plotly==5.17.0
+seaborn==0.12.2
+
+# Web Development
+requests==2.31.0
+Jinja2==3.1.2
+MarkupSafe==2.1.3
+
+# Data Storage & Analysis
+sqlite3  # Built-in with Python
+json5==0.9.14
+
+# Development & Testing
+pytest==7.4.2
+pytest-flask==1.2.0
+black==23.9.1
+flake8==6.1.0
+
+# Optional: For enhanced functionality
+# gradio==3.50.0  # Alternative UI framework
+# dash==2.14.1    # Another dashboard option
+# gunicorn==21.2.0  # Production WSGI server
+
+# System Requirements:
+# - Python 3.8+
+# - Modern web browser (Chrome, Firefox, Safari, Edge)
+# - At least 4GB RAM for image processing
+# - 2GB disk space for sample data and models
+
+# Installation Instructions:
+# 1. Create virtual environment:
+#    python -m venv faceauth_env
+#    source faceauth_env/bin/activate  # On Windows: faceauth_env\Scripts\activate
+#
+# 2. Install dependencies:
+#    pip install -r requirements.txt
+#
+# 3. Run interactive demo:
+#    python interactive_demo.py
+#
+# 4. Access interfaces:
+#    - Main Dashboard: http://localhost:5000
+#    - Human Studies: http://localhost:5001
+#    - Streamlit (optional): http://localhost:8501

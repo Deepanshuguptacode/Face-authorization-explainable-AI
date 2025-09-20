@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informed Consent - Explainable AI Study</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .consent-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .consent-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .consent-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .highlight-box {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 5px;
+        }
+        
+        .consent-checklist {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+        
+        .consent-checkbox {
+            margin: 1rem 0;
+            padding: 0.5rem;
+        }
+        
+        .consent-checkbox input[type="checkbox"] {
+            transform: scale(1.2);
+            margin-right: 0.5rem;
+        }
+        
+        .btn-consent {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-consent:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+        
+        .btn-consent:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .contact-info {
+            background: #e8f5e8;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #d4edda;
+        }
+    </style>
+</head>
+<body>
+    <div class="consent-container">
+        <!-- Header -->
+        <div class="consent-header">
+            <h1 class="display-5 mb-3">
+                <i class="fas fa-file-contract me-3"></i>
+                Informed Consent
+            </h1>
+            <p class="lead mb-0">
+                Research Study: Understanding AI Explanations in Face Recognition
+            </p>
+        </div>
+
+        <!-- Study Title and Investigators -->
+        <div class="consent-section">
+            <h2>Study Information</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Study Title:</h4>
+                    <p>Human Evaluation of Explainable Artificial Intelligence in Face Recognition Systems</p>
+                    
+                    <h4>Principal Investigator:</h4>
+                    <p>Dr. [Name], Department of Computer Science</p>
+                </div>
+                <div class="col-md-6">
+                    <h4>Institution:</h4>
+                    <p>[University/Organization Name]</p>
+                    
+                    <h4>IRB Approval:</h4>
+                    <p>Study #2024-AI-XAI-001</p>
+                    
+                    <h4>Study Duration:</h4>
+                    <p>45-60 minutes (one session)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Purpose -->
+        <div class="consent-section">
+            <h2>
+                <i class="fas fa-bullseye text-primary me-2"></i>
+                Purpose of This Study
+            </h2>
+            <p>
+                We are conducting research to understand how people interpret and trust explanations 
+                provided by artificial intelligence (AI) systems for face recognition tasks. Your 
+                participation will help us design better, more transparent AI systems.
+            </p>
+            
+            <div class="highlight-box">
+                <strong>Why is this important?</strong> As AI systems become more prevalent in security, 
+                authentication, and other applications, it's crucial that people can understand and 
+                trust these systems' decisions.
+            </div>
+        </div>
+
+        <!-- Procedures -->
+        <div class="consent-section">
+            <h2>
+                <i class="fas fa-tasks text-primary me-2"></i>
+                What Will You Do?
+            </h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Study Tasks:</h4>
+                    <ol>
+                        <li class="mb-2">Complete a brief demographics questionnaire</li>
+                        <li class="mb-2">View pairs of face images (20 tasks)</li>
+                        <li class="mb-2">Decide if each pair shows the same person</li>
+                        <li class="mb-2">Review AI explanations for these decisions</li>
+                        <li class="mb-2">Rate the quality and usefulness of explanations</li>
+                        <li class="mb-2">Provide feedback on the AI system</li>
+                    </ol>
+                </div>
+                
+                <div class="col-md-6">
+                    <h4>Example Task:</h4>
+                    <div class="border p-3 rounded">
+                        <p class="text-muted small">You will see:</p>
+                        <ul class="small">
+                            <li>Two face photographs</li>
+                            <li>AI's decision (match/no match)</li>
+                            <li>Visual explanations (attention maps)</li>
+                            <li>Text explanations</li>
+                            <li>Rating scales for explanation quality</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Collection -->
+        <div class="consent-section">
+            <h2>
+                <i class="fas fa-database text-primary me-2"></i>
+                Data We Will Collect
+            </h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Demographic Information:</h4>
+                    <ul>
+                        <li>Age group (ranges, not exact age)</li>
+                        <li>Gender identity</li>
+                        <li>Education level</li>
+                        <li>Technology experience</li>
+                        <li>AI familiarity</li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-6">
+                    <h4>Task Performance:</h4>
+                    <ul>
+                        <li>Your answers to face matching tasks</li>
+                        <li>Confidence ratings</li>
+                        <li>Response times</li>
+                        <li>Explanation quality ratings</li>
+                        <li>Written feedback (optional)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="warning-box">
+                <strong><i class="fas fa-exclamation-triangle me-2"></i>Important:</strong>
+                We do NOT collect your name, email address, IP address, or any personally 
+                identifying information. All data is completely anonymous.
+            </div>
+        </div>
+
+        <!-- Risks and Benefits -->
+        <div class="consent-section">
+            <h2>
+                <i class="fas fa-balance-scale text-primary me-2"></i>
+                Risks and Benefits
+            </h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Potential Risks:</h4>
+                    <ul>
+                        <li><strong>Minimal risk:</strong> This study involves no more risk than daily computer use</li>
+                        <li><strong>Eye strain:</strong> From viewing images on screen (take breaks as needed)</li>
+                        <li><strong>Boredom:</strong> Some tasks may be repetitive</li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-6">
+                    <h4>Potential Benefits:</h4>
+                    <ul>
+                        <li><strong>Learning:</strong> Gain insight into how AI systems work</li>
+                        <li><strong>Contribution:</strong> Help improve AI transparency and trustworthiness</li>
+                        <li><strong>Compensation:</strong> $15 Amazon gift card upon completion</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Privacy and Confidentiality -->
+        <div class="consent-section">
+            <h2>
+                <i class="fas fa-shield-alt text-primary me-2"></i>
+                Privacy and Confidentiality
+            </h2>
+            
+            <div class="highlight-box">
+                <h4>Your Privacy is Protected:</h4>
+                <ul class="mb-0">
+                    <li>All data is collected anonymously</li>
+                    <li>No tracking cookies or personal identifiers</li>
+                    <li>Data stored on secure, encrypted servers</li>
+                    <li>Only research team has access to data</li>
+                    <li>Results published only as aggregate statistics</li>
+                </ul>
+            </div>
+            
+            <h4>Data Usage:</h4>
+            <p>
+                Your anonymous data may be used in research publications, conference presentations, 
+                and to improve AI systems. Individual responses will never be identifiable.
+            </p>
+            
+            <h4>Data Retention:</h4>
+            <p>
+                Research data will be retained for 5 years as required by research standards, 
+                then permanently deleted.
+            </p>
+        </div>
+
+        <!-- Your Rights -->
+        <div class="consent-section">
+            <h2>
+                <i class="fas fa-user-shield text-primary me-2"></i>
+                Your Rights as a Participant
+            </h2>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>You Have the Right To:</h4>
+                    <ul>
+                        <li>Withdraw from the study at any time</li>
+                        <li>Skip any question or task</li>
+                        <li>Request information about the study</li>
+                        <li>Receive compensation even if you withdraw</li>
+                        <li>Contact the research team with concerns</li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-6">
+                    <h4>Withdrawal Process:</h4>
+                    <p>
+                        You may withdraw at any time by simply closing your browser. 
+                        If you withdraw after starting, your partial data will be deleted 
+                        unless you specifically request that we keep it for research purposes.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="consent-section">
+            <h2>
+                <i class="fas fa-envelope text-primary me-2"></i>
+                Contact Information
+            </h2>
+            
+            <div class="contact-info">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Research Team:</h4>
+                        <p>
+                            <strong>Email:</strong> <a href="mailto:study@university.edu">study@university.edu</a><br>
+                            <strong>Phone:</strong> (555) 123-4567<br>
+                            <strong>Office:</strong> Computer Science Building, Room 123
+                        </p>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h4>Ethics Committee:</h4>
+                        <p>
+                            If you have concerns about this study or your rights as a participant:<br>
+                            <strong>IRB Office:</strong> <a href="mailto:irb@university.edu">irb@university.edu</a><br>
+                            <strong>Phone:</strong> (555) 765-4321
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consent Checklist -->
+        <div class="consent-checklist">
+            <h3 class="mb-4">
+                <i class="fas fa-clipboard-check text-primary me-2"></i>
+                Consent Confirmation
+            </h3>
+            
+            <p>Please read each statement and check the box if you agree:</p>
+            
+            <div class="consent-checkbox">
+                <input type="checkbox" id="consent1" required>
+                <label for="consent1">
+                    I have read and understand the information about this research study.
+                </label>
+            </div>
+            
+            <div class="consent-checkbox">
+                <input type="checkbox" id="consent2" required>
+                <label for="consent2">
+                    I understand that my participation is voluntary and I can withdraw at any time.
+                </label>
+            </div>
+            
+            <div class="consent-checkbox">
+                <input type="checkbox" id="consent3" required>
+                <label for="consent3">
+                    I understand that my data will be collected anonymously and used for research purposes.
+                </label>
+            </div>
+            
+            <div class="consent-checkbox">
+                <input type="checkbox" id="consent4" required>
+                <label for="consent4">
+                    I am 18 years of age or older.
+                </label>
+            </div>
+            
+            <div class="consent-checkbox">
+                <input type="checkbox" id="consent5" required>
+                <label for="consent5">
+                    I have had the opportunity to ask questions about this study.
+                </label>
+            </div>
+            
+            <div class="consent-checkbox">
+                <input type="checkbox" id="consentFinal" required>
+                <label for="consentFinal">
+                    <strong>I voluntarily agree to participate in this research study.</strong>
+                </label>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="text-center">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <a href="/" class="btn btn-outline-secondary btn-lg w-100">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        Back to Information
+                    </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <button class="btn btn-consent btn-lg w-100" id="proceedBtn" disabled onclick="proceedToStudy()">
+                        <i class="fas fa-arrow-right me-2"></i>
+                        I Consent - Proceed to Study
+                    </button>
+                </div>
+            </div>
+            
+            <p class="text-muted mt-3">
+                <small>
+                    By clicking "I Consent", you are agreeing to participate in this research study.
+                    <br>
+                    You will be able to withdraw at any time during the study.
+                </small>
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Check all consent checkboxes
+        function updateProceedButton() {
+            const checkboxes = document.querySelectorAll('.consent-checkbox input[type="checkbox"]');
+            const proceedBtn = document.getElementById('proceedBtn');
+            
+            let allChecked = true;
+            checkboxes.forEach(checkbox => {
+                if (!checkbox.checked) {
+                    allChecked = false;
+                }
+            });
+            
+            proceedBtn.disabled = !allChecked;
+        }
+
+        // Add event listeners to all checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkboxes = document.querySelectorAll('.consent-checkbox input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateProceedButton);
+            });
+        });
+
+        // Proceed to study
+        async function proceedToStudy() {
+            try {
+                const response = await fetch('/api/consent', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        consented: true,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Track consent
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'consent_given', {
+                            'event_category': 'engagement',
+                            'event_label': 'informed_consent'
+                        });
+                    }
+                    
+                    // Redirect to demographics
+                    window.location.href = '/study/demographics';
+                } else {
+                    alert('Error processing consent. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error processing consent. Please try again.');
+            }
+        }
+
+        // Track time on consent page
+        let startTime = Date.now();
+        window.addEventListener('beforeunload', function() {
+            const timeSpent = (Date.now() - startTime) / 1000;
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'consent_page_time', {
+                    'event_category': 'engagement',
+                    'value': Math.round(timeSpent)
+                });
+            }
+        });
+    </script>
+</body>
+</html>
