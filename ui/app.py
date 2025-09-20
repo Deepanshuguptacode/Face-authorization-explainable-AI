@@ -243,15 +243,15 @@ def generate_explanation_text(similarity, is_match, top_attributes):
     
     return explanation
 
-@app.route('/simple')
-def simple_test():
-    """Simple test interface"""
-    return render_template('simple_test.html')
-
 @app.route('/')
 def index():
     """Main dashboard page"""
     return render_template('index.html')
+
+@app.route('/simple')
+def simple_test():
+    """Simple test interface"""
+    return render_template('simple_test.html')
 
 @app.route('/test-verify', methods=['GET'])
 def test_verify():
@@ -376,6 +376,16 @@ def health_check():
         'torch_cuda_available': torch.cuda.is_available()
     }
     return jsonify(status)
+
+@app.route('/demo-images/<filename>')
+def serve_demo_image(filename):
+    """Serve demo images from the root folder"""
+    import os
+    demo_files = ['anantu.jpg', 'passport phot 2.jpg']
+    if filename in demo_files:
+        root_path = os.path.dirname(os.path.dirname(__file__))  # Go up to faceauth folder
+        return send_from_directory(root_path, filename)
+    return "File not found", 404
 
 @app.route('/static/<path:filename>')
 def serve_static(filename):

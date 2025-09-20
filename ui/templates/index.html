@@ -200,7 +200,7 @@
 
                         <!-- Action Buttons -->
                         <div class="d-grid gap-2">
-                            <button class="btn btn-primary" onclick="runVerification()" id="verifyBtn" disabled>
+                            <button class="btn btn-primary" onclick="runVerification(); console.log('Verify button clicked!');" id="verifyBtn" disabled>
                                 <i class="fas fa-play me-2"></i>Run Verification
                             </button>
                             <button class="btn btn-secondary" onclick="loadDemoImages()">
@@ -352,6 +352,21 @@
     </div>
 
     <!-- Loading Modal -->
+    <!-- Loading Overlay (Custom) -->
+    <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: white; padding: 30px; border-radius: 10px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h5 class="mb-2">Processing Images...</h5>
+            <p class="mb-0 text-muted">Please wait while we analyze your images</p>
+            <button onclick="forceHideAllModals()" class="btn btn-sm btn-outline-secondary mt-3">
+                <i class="fas fa-times me-1"></i>Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Modal (Bootstrap - Backup) -->
     <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">

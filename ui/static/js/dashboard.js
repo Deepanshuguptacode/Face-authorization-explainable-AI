@@ -41,21 +41,34 @@ function initializeDashboard() {
  * Setup event listeners
  */
 function setupEventListeners() {
-    // Image upload listeners
-    document.getElementById('image1').addEventListener('change', function() {
-        loadImage(this, 'preview1');
-        checkVerifyButton();
-    });
+    // Image upload listeners with error handling
+    const image1Input = document.getElementById('image1');
+    const image2Input = document.getElementById('image2');
     
-    document.getElementById('image2').addEventListener('change', function() {
-        loadImage(this, 'preview2');
-        checkVerifyButton();
-    });
+    if (image1Input) {
+        image1Input.addEventListener('change', function() {
+            console.log('Image 1 changed');
+            loadImage(this, 'preview1');
+            checkVerifyButton();
+        });
+    }
+    
+    if (image2Input) {
+        image2Input.addEventListener('change', function() {
+            console.log('Image 2 changed');
+            loadImage(this, 'preview2');
+            checkVerifyButton();
+        });
+    }
     
     // Settings change listeners
-    document.getElementById('showSaliency').addEventListener('change', updateDisplaySettings);
-    document.getElementById('showAttributes').addEventListener('change', updateDisplaySettings);
-    document.getElementById('enableInteractive').addEventListener('change', updateDisplaySettings);
+    const saliencyCheck = document.getElementById('showSaliency');
+    const attributesCheck = document.getElementById('showAttributes');
+    const interactiveCheck = document.getElementById('enableInteractive');
+    
+    if (saliencyCheck) saliencyCheck.addEventListener('change', updateDisplaySettings);
+    if (attributesCheck) attributesCheck.addEventListener('change', updateDisplaySettings);
+    if (interactiveCheck) interactiveCheck.addEventListener('change', updateDisplaySettings);
     
     // Keyboard navigation
     document.addEventListener('keydown', handleKeyboardNavigation);
@@ -65,48 +78,65 @@ function setupEventListeners() {
  * Load and preview an uploaded image
  */
 function loadImage(input, previewId) {
-    if (input.files && input.files[0]) {
-        const file = input.files[0];
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            const preview = document.getElementById(previewId);
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-            
-            // Store image data
-            if (previewId === 'preview1') {
-                currentImages.image1 = {
-                    file: file,
-                    dataUrl: e.target.result
-                };
-            } else {
-                currentImages.image2 = {
-                    file: file,
-                    dataUrl: e.target.result
-                };
-            }
-            
-            // Animate preview appearance
-            preview.style.opacity = '0';
-            preview.style.transform = 'scale(0.8)';
-            preview.style.transition = 'all 0.3s ease';
-            
-            setTimeout(() => {
-                preview.style.opacity = '1';
-                preview.style.transform = 'scale(1)';
-                
-                // Show success message
-                if (currentImages.image1 && currentImages.image2) {
-                    showToast('Both images loaded! Click "Run Verification" to proceed.', 'success');
-                }
-            }, 100);
-            
-            console.log(`Image loaded: ${previewId}`);
-        };
-        
-        reader.readAsDataURL(file);
+    if (!input || !input.files || !input.files[0]) {
+        console.log('No file selected');
+        return;
     }
+
+    const file = input.files[0];
+    const reader = new FileReader();
+    
+    console.log(`Loading ${previewId}: ${file.name}`);
+    
+    reader.onload = function(e) {
+        const preview = document.getElementById(previewId);
+        if (!preview) {
+            console.error(`Preview element ${previewId} not found`);
+            return;
+        }
+        
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        
+        // Store image data
+        if (previewId === 'preview1') {
+            currentImages.image1 = {
+                file: file,
+                dataUrl: e.target.result
+            };
+            console.log('✅ Image 1 loaded successfully');
+        } else if (previewId === 'preview2') {
+            currentImages.image2 = {
+                file: file,
+                dataUrl: e.target.result
+            };
+            console.log('✅ Image 2 loaded successfully');
+        }
+        
+        // Animate preview appearance
+        preview.style.opacity = '0';
+        preview.style.transform = 'scale(0.8)';
+        preview.style.transition = 'all 0.3s ease';
+        
+        setTimeout(() => {
+            preview.style.opacity = '1';
+            preview.style.transform = 'scale(1)';
+            
+            // Show success message
+            if (currentImages.image1 && currentImages.image2) {
+                showToast('Both images loaded! Click "Run Verification" to proceed.', 'success');
+            }
+        }, 100);
+        
+        console.log(`Image loaded: ${previewId}`, currentImages);
+    };
+    
+    reader.onerror = function(error) {
+        console.error('Error reading file:', error);
+        showToast('Error loading image. Please try again.', 'error');
+    };
+    
+    reader.readAsDataURL(file);
 }
 
 /**
@@ -114,7 +144,18 @@ function loadImage(input, previewId) {
  */
 function checkVerifyButton() {
     const verifyBtn = document.getElementById('verifyBtn');
+    if (!verifyBtn) {
+        console.error('Verify button not found');
+        return;
+    }
+    
     const hasImages = currentImages.image1 && currentImages.image2;
+    
+    console.log('Checking verify button state:', {
+        hasImage1: !!currentImages.image1,
+        hasImage2: !!currentImages.image2,
+        hasImages: hasImages
+    });
     
     verifyBtn.disabled = !hasImages;
     
@@ -135,28 +176,52 @@ function checkVerifyButton() {
  * Run face verification
  */
 async function runVerification() {
+    console.log('🚀 Starting verification process');
+    console.log('Current images state:', currentImages);
+    
     if (!currentImages.image1 || !currentImages.image2) {
-        alert('Please upload both images first');
+        console.error('Missing images for verification');
+        alert('Please upload both images first!');
         return;
     }
     
+    // Show loading with immediate feedback
+    console.log('Showing loading overlay...');
     showLoading(true);
     
+    // Add a small delay to see if loading shows
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Safeguard: Force hide loading after 10 seconds (reduced for testing)
+    const loadingTimeout = setTimeout(() => {
+        console.warn('⚠️ Forcing loading modal to hide after timeout');
+        showLoading(false);
+        alert('Verification timed out. Please try again.');
+    }, 10000);
+    
     try {
+        console.log('📤 Preparing form data...');
+        
         // Prepare form data
         const formData = new FormData();
         formData.append('image1', currentImages.image1.file);
         formData.append('image2', currentImages.image2.file);
         
-        // Get settings
+        // Get settings with fallbacks
         const settings = {
-            explanationStyle: document.getElementById('explanationStyle').value,
-            showSaliency: document.getElementById('showSaliency').checked,
-            showAttributes: document.getElementById('showAttributes').checked,
-            enableInteractive: document.getElementById('enableInteractive').checked
+            explanationStyle: document.getElementById('explanationStyle')?.value || 'comprehensive',
+            showSaliency: document.getElementById('showSaliency')?.checked || true,
+            showAttributes: document.getElementById('showAttributes')?.checked || true,
+            enableInteractive: document.getElementById('enableInteractive')?.checked || true
         };
         
         formData.append('settings', JSON.stringify(settings));
+        
+        console.log('📤 Sending verification request with settings:', settings);
+        console.log('Files being sent:', {
+            image1: currentImages.image1.file.name,
+            image2: currentImages.image2.file.name
+        });
         
         // Make API call
         const response = await fetch('/verify', {
@@ -164,28 +229,42 @@ async function runVerification() {
             body: formData
         });
         
-        console.log('Response status:', response.status);
+        console.log('📥 Response received, status:', response.status);
         
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            const errorText = await response.text();
+            console.error('Response error:', errorText);
+            throw new Error(`Server error: ${response.status} - ${errorText}`);
         }
 
         const results = await response.json();
-        console.log('Verification results:', results);
+        console.log('✅ Verification results received:', results);
         
         if (!results.success) {
             throw new Error(results.error || 'Verification failed');
         }
         
-        verificationResults = results;        // Display results
+        verificationResults = results;
+        
+        // Display results
+        console.log('🎨 Displaying results...');
         displayVerificationResults(results);
+        showToast('Verification completed successfully!', 'success');
         
     } catch (error) {
-        console.error('Verification error:', error);
-        showError('Failed to process images. Please try again.');
+        console.error('❌ Verification error:', error);
+        alert(`Verification failed: ${error.message}`);
+        showToast(`Verification failed: ${error.message}`, 'error');
     } finally {
+        console.log('🔄 Cleaning up - hiding loading overlay');
+        clearTimeout(loadingTimeout);
         showLoading(false);
+        
+        // Double-check overlay is hidden
+        setTimeout(() => {
+            console.log('🔍 Final check - forcing overlay hidden');
+            forceHideAllModals();
+        }, 500);
     }
 }
 
@@ -193,8 +272,18 @@ async function runVerification() {
  * Display verification results
  */
 function displayVerificationResults(results) {
+    console.log('🎨 Displaying verification results');
+    
+    // Force hide loading modal first
+    showLoading(false);
+    
     // Show results card
     const resultsCard = document.getElementById('resultsCard');
+    if (!resultsCard) {
+        console.error('Results card not found!');
+        return;
+    }
+    
     resultsCard.style.display = 'block';
     resultsCard.scrollIntoView({ behavior: 'smooth' });
     
@@ -643,6 +732,94 @@ function drawExpressionChart(canvas) {
  * Load demo images
  */
 function loadDemoImages() {
+    console.log('🎭 Loading demo images: anantu.jpg and passport phot 2.jpg');
+    
+    // Show loading status
+    showToast('Loading demo images...', 'info');
+    
+    // Function to convert image URL to File object
+    async function urlToFile(url, filename) {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            return new File([blob], filename, { type: blob.type });
+        } catch (error) {
+            console.error(`Error loading ${filename}:`, error);
+            throw error;
+        }
+    }
+    
+    // Load the actual demo images
+    Promise.all([
+        urlToFile('/demo-images/anantu.jpg', 'anantu.jpg'),
+        urlToFile('/demo-images/passport phot 2.jpg', 'passport phot 2.jpg')
+    ]).then(([file1, file2]) => {
+        // Create URLs for preview
+        const url1 = URL.createObjectURL(file1);
+        const url2 = URL.createObjectURL(file2);
+        
+        // Set preview images
+        const preview1 = document.getElementById('preview1');
+        const preview2 = document.getElementById('preview2');
+        
+        if (preview1 && preview2) {
+            preview1.src = url1;
+            preview1.style.display = 'block';
+            preview2.src = url2;
+            preview2.style.display = 'block';
+            
+            // Update current images with actual files
+            currentImages.image1 = { file: file1, dataUrl: url1 };
+            currentImages.image2 = { file: file2, dataUrl: url2 };
+            
+            // Update file inputs to show selected files
+            const input1 = document.getElementById('image1');
+            const input2 = document.getElementById('image2');
+            
+            // Create new FileList objects (this is a bit tricky in JavaScript)
+            const dt1 = new DataTransfer();
+            const dt2 = new DataTransfer();
+            dt1.items.add(file1);
+            dt2.items.add(file2);
+            
+            if (input1) input1.files = dt1.files;
+            if (input2) input2.files = dt2.files;
+            
+            // Enable verify button
+            checkVerifyButton();
+            
+            console.log('✅ Demo images loaded successfully');
+            showToast('Demo images loaded! You can now run verification.', 'success');
+            
+            // Add visual animation
+            [preview1, preview2].forEach(preview => {
+                preview.style.opacity = '0';
+                preview.style.transform = 'scale(0.8)';
+                preview.style.transition = 'all 0.3s ease';
+                
+                setTimeout(() => {
+                    preview.style.opacity = '1';
+                    preview.style.transform = 'scale(1)';
+                }, 100);
+            });
+            
+        } else {
+            console.error('Preview elements not found');
+            showToast('Error: Preview elements not found', 'error');
+        }
+        
+    }).catch(error => {
+        console.error('❌ Error loading demo images:', error);
+        showToast(`Error loading demo images: ${error.message}`, 'error');
+        
+        // Fallback to original demo behavior if loading fails
+        loadFallbackDemoImages();
+    });
+}
+
+function loadFallbackDemoImages() {
+    console.log('🔄 Loading fallback demo images');
+    
     // Create demo images (placeholder)
     const demoData1 = 'data:image/svg+xml;base64,' + btoa(`
         <svg width="224" height="224" xmlns="http://www.w3.org/2000/svg">
@@ -651,7 +828,7 @@ function loadDemoImages() {
             <circle cx="95" cy="75" r="3" fill="white"/>
             <circle cx="129" cy="75" r="3" fill="white"/>
             <path d="M 90 95 Q 112 105 134 95" stroke="#1976d2" stroke-width="2" fill="none"/>
-            <text x="112" y="200" text-anchor="middle" font-family="Arial" font-size="14" fill="#1976d2">Demo Face 1</text>
+            <text x="112" y="200" text-anchor="middle" font-family="Arial" font-size="14" fill="#1976d2">Anantu (Demo)</text>
         </svg>
     `);
     
@@ -662,7 +839,7 @@ function loadDemoImages() {
             <circle cx="95" cy="75" r="3" fill="white"/>
             <circle cx="129" cy="75" r="3" fill="white"/>
             <path d="M 90 95 Q 112 105 134 95" stroke="#7b1fa2" stroke-width="2" fill="none"/>
-            <text x="112" y="200" text-anchor="middle" font-family="Arial" font-size="14" fill="#7b1fa2">Demo Face 2</text>
+            <text x="112" y="200" text-anchor="middle" font-family="Arial" font-size="14" fill="#7b1fa2">Passport (Demo)</text>
         </svg>
     `);
     
@@ -670,65 +847,22 @@ function loadDemoImages() {
     document.getElementById('preview1').src = demoData1;
     document.getElementById('preview2').src = demoData2;
     
-    // Update current images
-    currentImages.image1 = { dataUrl: demoData1, file: null };
-    currentImages.image2 = { dataUrl: demoData2, file: null };
-    
-    // Enable verify button
-    checkVerifyButton();
-    
-    // Show demo results
-    const demoResults = {
-        similarity: 0.782,
-        isMatch: true,
-        saliency: {
-            image1: null,
-            image2: null
-        },
-        attributes: [
-            { name: 'Male', confidence: 0.8 },
-            { name: 'Young', confidence: 0.9 },
-            { name: 'Attractive', confidence: 0.7 },
-            { name: 'Brown_Hair', confidence: 0.6 },
-            { name: 'Smiling', confidence: 0.5 },
-            { name: 'No_Beard', confidence: 0.8 },
-            { name: 'No_Eyeglasses', confidence: 0.9 },
-            { name: 'Straight_Hair', confidence: 0.4 }
-        ],
-        explanation: {
-            text: `
-                <div class="mb-3">
-                    <i class="fas fa-check-circle text-success me-2"></i>
-                    <strong>Match detected</strong> with high confidence (similarity: 0.782).
-                </div>
-                <p>
-                    The AI model identified several key matching features between the two faces:
-                </p>
-                <ul>
-                    <li><strong>Facial Structure:</strong> Similar face shape and proportions</li>
-                    <li><strong>Key Features:</strong> Matching eye shape, nose structure, and mouth position</li>
-                    <li><strong>Attributes:</strong> Both faces show male, young characteristics</li>
-                </ul>
-                <p>
-                    The model focused primarily on the central facial region, particularly around 
-                    the eyes and nose area, which are known to be highly discriminative for face recognition.
-                </p>
-            `,
-            accessibility: 'Demo comparison showing matched faces with 78.2% similarity. Key identifying features include facial structure and eye region characteristics.'
-        },
-        interactive: {
-            prototypes: [
-                { id: 1, similarity: 0.89, attributes: ['Male', 'Young', 'Brown_Hair'] },
-                { id: 2, similarity: 0.85, attributes: ['Male', 'Smiling', 'No_Beard'] },
-                { id: 3, similarity: 0.82, attributes: ['Male', 'Young', 'Attractive'] }
-            ]
-        }
-    };
-    
-    displayVerificationResults(demoResults);
-    
-    // Show success message
-    showSuccess('Demo images loaded successfully!');
+    // Create mock File objects for compatibility
+    fetch(demoData1).then(res => res.blob()).then(blob1 => {
+        fetch(demoData2).then(res => res.blob()).then(blob2 => {
+            currentImages.image1 = { 
+                file: new File([blob1], 'anantu_demo.svg', { type: 'image/svg+xml' }), 
+                dataUrl: demoData1 
+            };
+            currentImages.image2 = { 
+                file: new File([blob2], 'passport_demo.svg', { type: 'image/svg+xml' }), 
+                dataUrl: demoData2 
+            };
+            
+            checkVerifyButton();
+            showToast('Fallback demo images loaded', 'info');
+        });
+    });
 }
 
 /**
@@ -818,13 +952,56 @@ function animateCardAppearance() {
  * Show loading state
  */
 function showLoading(show) {
-    const modal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    console.log(`${show ? 'Showing' : 'Hiding'} loading overlay`);
+    
+    const overlay = document.getElementById('loadingOverlay');
+    if (!overlay) {
+        console.error('Loading overlay not found!');
+        return;
+    }
     
     if (show) {
-        modal.show();
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        console.log('✅ Loading overlay shown');
     } else {
-        modal.hide();
+        overlay.style.display = 'none';
+        document.body.style.overflow = '';
+        console.log('✅ Loading overlay hidden');
     }
+}
+
+/**
+ * Force clear all modals and overlays
+ */
+function forceHideAllModals() {
+    console.log('🔧 Force clearing all modals and overlays');
+    
+    // Hide custom loading overlay
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+    
+    // Hide all Bootstrap modals
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+    });
+    
+    // Remove all backdrops
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+        backdrop.remove();
+    });
+    
+    // Reset body
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+    document.body.style.pointerEvents = '';
+    
+    console.log('✅ All modals and overlays cleared');
 }
 
 /**
@@ -904,6 +1081,8 @@ function createToast(message, type) {
 function handleKeyboardNavigation(event) {
     // ESC key to close modals
     if (event.key === 'Escape') {
+        console.log('🔑 Escape key pressed - clearing modals');
+        
         const modals = document.querySelectorAll('.modal.show');
         modals.forEach(modal => {
             const bsModal = bootstrap.Modal.getInstance(modal);
@@ -911,6 +1090,11 @@ function handleKeyboardNavigation(event) {
                 bsModal.hide();
             }
         });
+        
+        // Force clear any stuck modals
+        setTimeout(() => {
+            forceHideAllModals();
+        }, 500);
     }
     
     // Enter key on verify button
