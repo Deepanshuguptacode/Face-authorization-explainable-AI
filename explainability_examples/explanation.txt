@@ -1,0 +1,17 @@
+IDENTITY EXPLANATION
+==================================================
+
+Identity prediction: 8724 with 5.4% confidence. No significant attribute patterns detected.  Visual analysis unavailable.
+
+PREDICTED ATTRIBUTES
+------------------------------
+5 o Clock Shadow: Present (confidence: 0.004)
+Arched Eyebrows: Present (confidence: 0.035)
+Attractive: Absent (confidence: 0.024)
+Bags Under Eyes: Present (confidence: 0.006)
+Bald: Absent (confidence: 0.018)
+Bangs: Present (confidence: 0.064)
+Big Lips: Absent (confidence: 0.012)
+Big Nose: Absent (confidence: 0.041)
+Black Hair: Absent (confidence: 0.069)
+Blond Hair: Present (confidence: 0.020)
